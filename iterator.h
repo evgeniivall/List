@@ -13,6 +13,7 @@ private:
     typename List<T>::Node* current;
 public:
     iterator():current(NULL){}
+    iterator(const iterator<T> & other);
     explicit iterator(typename List<T>::Node* ptr):current(ptr){}
     iterator<T>& operator =(const iterator<T>& other);
 
@@ -31,6 +32,12 @@ public:
 
     typename List<T>::Node* base() const;
 };
+
+template<class T>
+iterator<T>::iterator(const iterator<T> & other)
+{
+    current = other.current;
+}
 
 template<class T>
 iterator<T>& iterator<T>::operator =(const iterator<T>& other)

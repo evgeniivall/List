@@ -20,9 +20,10 @@ private:
 	};
     Node* head_;
     Node* tail_;
+
 public:
 
-	List() :head_(NULL), tail_(NULL) {}
+    List() :head_(NULL), tail_(NULL){}
     List(const T& a);
     List(const List& lst);
     List(std::initializer_list<T> list);
@@ -43,7 +44,6 @@ public:
 
     iterator<T> erase(iterator<T> pos);
     iterator<T> erase(iterator<T> first, iterator<T> last);
-
     std::size_t size();
     bool empty()
     {
@@ -77,7 +77,12 @@ List<T>::List(const T& a)
 {
     head_ = new Node;
     head_->data = a;
-    head_->next = NULL;
+
+    head_->next = new Node;
+    head_->next->next = NULL;
+    head_->next->prev = head_;
+
+    head_->next =NULL;
     head_->prev = NULL;
     tail_ = head_;
 }
@@ -134,6 +139,8 @@ List<T>::~List()
         delete head_;
         head_ = temp;
     }
+
+
 }
 
 
@@ -141,18 +148,23 @@ template <typename T>
 void List<T>::push_back(const T& a)
 {
     Node* temp = new Node;
-    temp->next = NULL;
+    temp->next = new Node;
+    temp->next->prev = temp;
+    temp->next->next = NULL;
     temp->data = a;
+
     if (head_ != NULL)
     {
-        temp->prev = tail_;
+        delete (tail_->next);
         tail_->next = temp;
+        temp->prev = tail_;
         tail_ = temp;
     }
     else
     {
         temp->prev = NULL;
-        head_ = tail_ = temp;
+        head_ = temp;
+        tail_ = temp;
     }
 
 }
@@ -184,12 +196,16 @@ void List<T>::pop_back()
         if(!(head_ == tail_))
         {
             Node* temp = tail_->prev;
+            delete tail_->next;
             delete tail_;
             tail_ = temp;
-            tail_->next = NULL;
+            tail_->next = new Node;
+            tail_->next->next = NULL;
+            tail_->next->prev = tail_;
         }
         else
         {
+            delete tail_->next;
             delete tail_;
             tail_ = head_ = NULL;
         }
@@ -227,8 +243,8 @@ iterator<T> List<T>::begin()const
 template <typename T>
 iterator<T> List<T>::end()const
 {
-    iterator<T> it(tail_->next);
-    return it;
+    iterator<T> it(tail_);
+    return ++it;
 }
 
 template <typename T>
